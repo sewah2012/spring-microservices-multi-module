@@ -1,0 +1,26 @@
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+}
+
+jib {
+    from {
+        image = "${baseImage}"
+    }
+    to {
+        image = "${registryName}/${project.name}:${version}"
+        auth {
+            username = "${registryUser}" // Defined in 'gradle.properties'.
+            password = "${registryPassword}"
+        }
+    }
+    container {
+        labels.putAll(
+                "maintainer": "$maintainer",
+                "org.opencontainers.image.title": "$project.name",
+                "org.opencontainers.image.version": "$version",
+                "org.opencontainers.image.source": "$gitSource"
+        )
+        creationTime = "USE_CURRENT_TIMESTAMP"
+        jvmFlags = ['-server', '-Xtune:virtualized', '-XX:+UseContainerSupport', '-XX:MaxRAMPercentage=80', '-Djava.security.egd=file:/dev/./urandom']
+    }
+}

@@ -2,13 +2,16 @@ plugins {
     id "io.spring.dependency-management" version "$springDependencyManagerVersion" apply false
     id "org.springframework.boot" version "$springBootVersion" apply false
     id "com.google.cloud.tools.jib" version "$jibPluginVersion" apply false
-    id "com.google.protobuf" version "$protobufPluginVersion" apply false
 }
 
 subprojects {
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'com.google.cloud.tools.jib'
     apply plugin: 'java'
     apply plugin: 'idea'
-    group = 'com.boutouil'
+
+    group = 'com.chill'
 
     sourceCompatibility = JavaVersion.VERSION_11
 
@@ -30,8 +33,17 @@ subprojects {
     }
 
     dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-actuator'
+        implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
         compileOnly "org.mapstruct:mapstruct:$mapStructVersion", "org.projectlombok:lombok:${lombokVersion}"
         annotationProcessor "org.mapstruct:mapstruct-processor:$mapStructVersion", "org.projectlombok:lombok:${lombokVersion}", "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
         annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    }
+
+    dependencyManagement {
+        imports {
+            // SpringCloud BOM/platform dependency. This is the only place you set version of SpringCloud
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+        }
     }
 }
